@@ -70,8 +70,10 @@ const UserDropdown = () => {
 
   const handleUserLogout = async () => {
     try {
+      sessionStorage.removeItem("user_token"), router.push(`/login`)
+
       // Sign out from the app
-      await signOut({ callbackUrl: process.env.NEXT_PUBLIC_APP_URL })
+
     } catch (error) {
       console.error(error)
 

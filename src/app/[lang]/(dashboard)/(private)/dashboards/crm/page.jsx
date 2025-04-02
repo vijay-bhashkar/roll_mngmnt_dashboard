@@ -1,4 +1,15 @@
 // MUI Imports
+"use client"
+
+import { useEffect, useState } from 'react'
+
+import { useRouter } from 'next/navigation'
+
+import { ToastContainer } from 'react-toastify';
+
+import "react-toastify/dist/ReactToastify.css";
+
+
 import Grid from '@mui/material/Grid2'
 
 // Component Imports
@@ -15,11 +26,27 @@ import LastTransaction from '@views/dashboards/crm/LastTransaction'
 import ActivityTimeline from '@views/dashboards/crm/ActivityTimeline'
 
 // Server Action Imports
-import { getServerMode } from '@core/utils/serverHelpers'
 
-const DashboardCRM = async () => {
+const DashboardCRM = () => {
   // Vars
-  const serverMode = await getServerMode()
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const router = useRouter();
+
+
+  useEffect(() => {
+    // Check if the authentication cookie exists
+    const token = sessionStorage.getItem("user_token");
+
+    if (token) {
+      setIsAuthenticated(true);
+
+    } else {
+      setIsAuthenticated(false);
+      router.push('/login');
+
+     // Redirect to login page if not authenticated
+    }
+  }, [router]);
 
   return (
     <Grid container spacing={6}>
@@ -76,11 +103,13 @@ const DashboardCRM = async () => {
         <ActiveProjects />
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
-        <LastTransaction serverMode={serverMode} />
+        <LastTransaction serverMode={"serverMode"} />
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
         <ActivityTimeline />
       </Grid>
+                  <ToastContainer position="top-right" autoClose={3000} />
+
     </Grid>
   )
 }

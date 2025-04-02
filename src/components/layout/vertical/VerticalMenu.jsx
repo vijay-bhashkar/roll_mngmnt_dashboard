@@ -161,17 +161,15 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           </SubMenu>
           <MenuItem
             href={`/${locale}/apps/category`}
-            icon={<i className='tabler-mail' />}
-            exactMatch={false}
-            activeUrl='/apps/email'
+            icon={<i className='tabler-layout' />}            exactMatch={false}
+            activeUrl='/apps/category'
           >
             {"Category"}
           </MenuItem>
           <MenuItem
             href={`/${locale}/apps/subcategory`}
-            icon={<i className='tabler-mail' />}
-            exactMatch={false}
-            activeUrl='/apps/email'
+            icon={<i className='tabler-layout' />}            exactMatch={false}
+            activeUrl='/apps/subcategory'
           >
             {"Sub Category"}
           </MenuItem>
@@ -179,7 +177,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
             href={`/${locale}/apps/business`}
             icon={<i className='tabler-mail' />}
             exactMatch={false}
-            activeUrl='/apps/email'
+            activeUrl='/apps/business'
           >
             {"Business"}
           </MenuItem>
@@ -288,7 +286,9 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           </SubMenu> */}
         {/* </MenuSection> */}
         {/* <MenuSection label={dictionary['navigation'].formsAndTables}>
-          <MenuItem href={`/${locale}/forms/form-layouts`} icon={<i className='tabler-layout' />}>
+          <MenuItem href={`/${locale}/forms/form-layouts`}
+
+           icon={<i className='tabler-layout' />}>
             {dictionary['navigation'].formLayouts}
           </MenuItem>
           <MenuItem href={`/${locale}/forms/form-validation`} icon={<i className='tabler-checkup-list' />}>

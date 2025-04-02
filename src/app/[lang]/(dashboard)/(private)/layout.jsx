@@ -32,7 +32,11 @@ const Layout = async props => {
   const direction = i18n.langDirection[params.lang]
   const dictionary = await getDictionary(params.lang)
   const mode = await getMode()
-  const systemMode = await getSystemMode()
+  const systemMode = await getSystemMode();
+
+
+
+
 
   return (
     <Providers direction={direction}>

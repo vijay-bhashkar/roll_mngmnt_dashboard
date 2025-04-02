@@ -24,6 +24,7 @@ import '@/app/globals.css'
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
 
+
 export const metadata = {
   title: 'Vuexy - MUI Next.js Admin Dashboard Template',
   description:
@@ -37,7 +38,9 @@ const RootLayout = async props => {
   // Vars
   const headersList = await headers()
   const systemMode = await getSystemMode()
-  const direction = i18n.langDirection[params.lang]
+  const direction = i18n.langDirection[params.lang];
+
+
 
   return (
     <TranslationWrapper headersList={headersList} lang={params.lang}>

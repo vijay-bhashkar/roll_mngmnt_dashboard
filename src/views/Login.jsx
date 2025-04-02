@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
@@ -27,6 +27,11 @@ import { email, object, minLength, string, pipe, nonEmpty } from 'valibot'
 import classnames from 'classnames'
 
 // Component Imports
+import { ToastContainer , toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
+
+
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 
@@ -39,6 +44,7 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+import AuthService from '@/services/authService'
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -75,7 +81,8 @@ const schema = object({
 
 const Login = ({ mode }) => {
   // States
-  const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const [loading ,setLoading] = useState(false);
   const [errorState, setErrorState] = useState(null)
 
   // Vars
@@ -120,14 +127,46 @@ const Login = ({ mode }) => {
 
   const onSubmit = async (data) => {
     try {
-      // Redirect directly to the home page
-      router.replace(getLocalizedUrl("/", locale));
+      setLoading(true);
+      const res = await AuthService.login(data); // Use the values from Formik
 
+      sessionStorage.setItem("user_token", res.data.accessToken);
+
+    // Store token
+     // Redirect after successful login
+
+     toast.success(res?.message)
+      setTimeout(() => {
+        router.push('/dashboards/crm');
+
+      }, 1000);
     } catch (error) {
-      console.error("An error occurred during the redirection:", error);
-      setErrorState({ message: "Something went wrong. Please try again." });
+      setLoading(true); // Store token
+
+      toast.error(error?.response?.data?.message || "Error Caught" )
+
+    }finally{
+      setLoading(false)
     }
+
   };
+
+   const [isAuthenticated, setIsAuthenticated] = useState(null);
+
+
+    useEffect(() => {
+      // Check if the authentication cookie exists
+      const token = sessionStorage.getItem("user_token");
+
+      if (token) {
+        setIsAuthenticated(true);
+        router.push('/dashboards/crm');
+      } else {
+        setIsAuthenticated(false);
+
+       // Redirect to login page if not authenticated
+      }
+    }, [router ,setIsAuthenticated]);
 
 
 
@@ -224,7 +263,7 @@ const Login = ({ mode }) => {
                 />
               )}
             />
-            <div className='flex justify-between items-center gap-x-3 gap-y-1 flex-wrap'>
+            {/* <div className='flex justify-between items-center gap-x-3 gap-y-1 flex-wrap'>
               <FormControlLabel control={<Checkbox defaultChecked />} label='Remember me' />
               <Typography
                 className='text-end'
@@ -234,8 +273,8 @@ const Login = ({ mode }) => {
               >
                 Forgot password?
               </Typography>
-            </div>
-            <Button fullWidth variant='contained' type='submit'>
+            </div> */}
+            <Button disabled={loading} fullWidth variant='contained' type='submit'>
               Login
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
@@ -244,7 +283,7 @@ const Login = ({ mode }) => {
                 Create an account
               </Typography>
             </div>
-            <Divider className='gap-2'>or</Divider>
+            {/* <Divider className='gap-2'>or</Divider>
             <Button
               color='secondary'
               className='self-center text-textPrimary'
@@ -253,10 +292,12 @@ const Login = ({ mode }) => {
               onClick={() => signIn('google')}
             >
               Sign in with Google
-            </Button>
+            </Button> */}
           </form>
         </div>
       </div>
+            <ToastContainer position="top-right" autoClose={3000} />
+
     </div>
   )
 }

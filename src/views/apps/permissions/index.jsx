@@ -37,6 +37,7 @@ import TablePaginationComponent from '@components/TablePaginationComponent'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
+import adminService from '@/services/adminService'
 
 // Vars
 const colors = {
@@ -62,7 +63,7 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
 
 const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
   // States
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
     setValue(initialValue)
@@ -82,14 +83,37 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const Permissions = ({ permissionsData }) => {
+const Permissions = () => {
   // States
   const [open, setOpen] = useState(false)
-  const [rowSelection, setRowSelection] = useState({})
+  const [rowSelection, setRowSelection] = useState({});
+  const [refresh, setRefresh] = useState(false);
   const [editValue, setEditValue] = useState('')
 
-  const [data, setData] = useState(...[permissionsData])
-  const [globalFilter, setGlobalFilter] = useState('')
+  const [data, setData] = useState([])
+  const [globalFilter, setGlobalFilter] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await adminService.getAdmins();
+
+        // Check if response.data is valid before setting it
+        if (response?.data && Array.isArray(response.data)) {
+          setData(response.data);
+        } else {
+          console.error("Invalid API response:", response);
+          setData([]); // Prevents undefined errors
+        }
+      } catch (error) {
+        console.error("Error fetching permissions data:", error);
+        setData([]); // Prevent crash if API fails
+      }
+    };
+
+    fetchData();
+  }, [refresh]);
+
 
   // Vars
   const buttonProps = {
@@ -105,35 +129,12 @@ const Permissions = ({ permissionsData }) => {
     () => [
       columnHelper.accessor('name', {
         header: 'Name',
-        cell: ({ row }) => <Typography color='text.primary'>{row.original.name}</Typography>
+        cell: ({ row }) => <Typography color='text.primary'>{row.original.fullName}</Typography>
       }),
-      columnHelper.accessor('assignedTo', {
-        header: 'Assigned To',
-        cell: ({ row }) =>
-          typeof row.original.assignedTo === 'string' ? (
-            <Chip
-              variant='tonal'
-              label={row.original.assignedTo}
-              color={colors[row.original.assignedTo]}
-              size='small'
-              className='capitalize'
-            />
-          ) : (
-            row.original.assignedTo.map((item, index) => (
-              <Chip
-                key={index}
-                variant='tonal'
-                label={item}
-                color={colors[item]}
-                size='small'
-                className='capitalize mie-4'
-              />
-            ))
-          )
-      }),
-      columnHelper.accessor('createdDate', {
-        header: 'Created Date',
-        cell: ({ row }) => <Typography>{row.original.createdDate}</Typography>
+
+      columnHelper.accessor('Email', {
+        header: 'Email',
+        cell: ({ row }) => <Typography>{row.original.email}</Typography>
       }),
       columnHelper.accessor('action', {
         header: 'Actions',
@@ -289,7 +290,7 @@ const Permissions = ({ permissionsData }) => {
           }}
         />
       </Card>
-      <AdminDialog open={open} setOpen={setOpen} data={editValue} />
+      <AdminDialog refresh={refresh} setRefresh={setRefresh} open={open} setOpen={setOpen} data={editValue} />
     </>
   )
 }
